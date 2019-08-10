@@ -1,2 +1,5 @@
-# php-upload
-Upload de archivos con PHP
+# PHP: Upload
+
+Componente para uploads de archivos con PHP.
+
+
