@@ -1,4 +1,4 @@
-# PHP: Upload
+# PHP FileUpload
 
 Clase para validar y procesar upload de archivos con PHP.
 
