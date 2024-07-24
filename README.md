@@ -56,12 +56,12 @@ if ($upload->hasError()) {
 
 ## Métodos disponibles
 
-| Método                       | Descripción                                                                       |
-|------------------------------|-----------------------------------------------------------------------------------|
-| `setFolderDestination(path)` | Define la carpeta donde se guardarán los archivos                                 |
-| `setMaxFileSize(size)`       | Define el tamaño máximo aceptado, se expresa en bytes                             |
-| `setFilesAllowed([])`        | Array con los tipos de archivos (extensiones) aceptados.                          |
-| `save(input, path)`          | Guarda el archivo subido, recibo el campo y la ruta a guardar de manera opcional. |
-| `getErrorMessage()`          | Devuelve los mensajes de error encontrados en el proceso de upload.               |
-| `hasError()`                 | Devuelve true si el proceso de upload ha tenido un error.                         |
+| Método                       | Descripción                                                                   |
+|------------------------------|-------------------------------------------------------------------------------|
+| `setFolderDestination(path)` | Define la carpeta donde se guardarán los archivos                             |
+| `setMaxFileSize(size)`       | Define el tamaño máximo aceptado, se expresa en bytes                         |
+| `setFilesAllowed([])`        | Array con los tipos de archivos (extensiones) aceptados.                      |
+| `save(input, path)`          | Guarda el archivo subido, usa nombre del input y opcional la ruta de destino. |
+| `getErrorMessage()`          | Devuelve los mensajes de error encontrados en el proceso de upload.           |
+| `hasError()`                 | Devuelve true si el proceso de upload ha tenido un error.                     |
 
