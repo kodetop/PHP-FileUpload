@@ -6,32 +6,36 @@ namespace Kodetop;
 
 class FileUpload
 {
-    private $uploadDir;
-    private $allowedTypes;
-    private $allowedMimes;
-    private $maxFileSize;
-    private $errorMessage;
+    private string $folder;
+    private int $maxSize;
+    private array $TYPES;
+    private array $MIMES;
+    private array $error;
 
-    public function __construct(String $uploadDir = "files/", Array $allowedTypes = array()) {
-        $this->uploadDir = $uploadDir;
-        $this->allowedTypes = $allowedTypes;
-        $this->maxFileSize = 0;
-        $this->errorMessage = "";
+    public function __construct() {
+        $this->folder = "uploads";
+        $this->maxSize = 0;
+        $this->TYPES = [];
+        $this->error = [];
+    }
 
+    public function setFolderDestination(string $folder)
+    {
+        $this->folder = $folder;
+    }
+
+    public function setMaxSize(int $maxSize) {
+        $this->maxSize = $maxSize;
+    }
+
+    public function setTypesAllowed(array $types) {
+        $this->TYPES = $types;
         $this->checkAllowedMimes();
     }
 
-    public function setMaxFileSize(int $maxFileSize) {
-        $this->maxFileSize = $maxFileSize;
-    }
-
-    public function setFilesAllowed(Array $allowedTypes) {
-        $this->allowedTypes = $allowedTypes;
-        $this->checkAllowedMimes();
-    }
-
-    public function save($name) {
+    public function save(string $name, string $folder = '') {
         $file = $_FILES[$name];
+        $this->folder = ($folder != '') ? $folder : $this->folder;
 
         $name = basename($file['name']);                                          // file name
         $size = $file['size'];                                                    // file size
@@ -40,40 +44,44 @@ class FileUpload
 
         // Check upload error
         if ($file["error"] !== UPLOAD_ERR_OK) {
-            $this->errorMessage = "Error: " . $file["error"];
+            $this->error[] = "Error: " . $file["error"];
             return false;
         }
 
         // Check file type
-        if (!in_array($type, $this->allowedTypes)) {
-            $this->errorMessage = "Error: Tipo de archivo no permitido (File type).";
+        if (!in_array($type, $this->TYPES)) {
+            $this->error[] = "Error (" . $name . "): Tipo de archivo no permitido (File type).";
             return false;
         }
 
         // Check mime type
-        if (!in_array($mime, $this->allowedMimes)) {
-            $this->errorMessage = "Error: Tipo de archivo no permitido (MIME type).";
+        if (!in_array($mime, $this->MIMES)) {
+            $this->error[] = "Error (" . $name . "): Tipo de archivo no permitido (MIME type).";
             return false;
         }
 
         // Check file size
-        if ($this->maxFileSize > 0 && $this->maxFileSize < $size) {
-            $this->errorMessage = "Error: El archivo es demasiado grande.";
+        if ($this->maxSize > 0 && $this->maxSize < $size) {
+            $this->error[] = "Error (" . $name . "): El archivo es demasiado grande.";
             return false;
         }
 
         // Move uploaded file to target directory
-        $newFile = $this->uploadDir . uniqid() . '-' . $name;
-        if (move_uploaded_file($file['tmp_name'], $newFile)) {
+        $newFile =  uniqid() . '-' . $name;
+        if (move_uploaded_file($file['tmp_name'], $this->folder . '/' . $newFile)) {
             return $newFile;
         } else {
-            $this->errorMessage = "Error: Hubo un problema al subir el archivo.";
+            $this->error[] = "Error (" . $name . "): Hubo un problema al subir el archivo.";
             return false;
         }
     }
 
+    public function hasError() {
+        return (sizeof($this->error) > 0);
+    }
+
     public function getErrorMessage() {
-        return $this->errorMessage;
+        return implode('<br>', $this->error);
     }
 
     private function checkAllowedMimes()
@@ -108,10 +116,10 @@ class FileUpload
         );
 
         $allowedMimes = array();
-        foreach ($this->allowedTypes as $type) {
+        foreach ($this->TYPES as $type) {
             $allowedMimes[] = $mimeTypes[$type];
         }
 
-        $this->allowedMimes = $allowedMimes;
+        $this->MIMES = $allowedMimes;
     }
 }
